@@ -5,9 +5,7 @@
  * License: DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
  */
 
-#include "defines.h"
 #include "clunet_config.h"
-#include "bits.h"
 #include "clunet.h"
 
 #include <stdint.h>
@@ -31,8 +29,7 @@ volatile uint8_t clunetTimerStart = 0;
 volatile char dataToSend[CLUNET_SEND_BUFFER_SIZE];
 volatile char dataToRead[CLUNET_READ_BUFFER_SIZE];
 
-static inline void
-clunet_start_send()
+static inline void clunet_start_send(void)
 {
 	clunetSendingState = CLUNET_SENDING_STATE_INIT;
 	// подождем 1.5Т, чтобы нас гарантированно могли остановить при передаче на линии со стороны другого устройства в процедуре внешнего прерывания
@@ -40,8 +37,7 @@ clunet_start_send()
 	CLUNET_ENABLE_TIMER_COMP;	// Включаем прерывание сравнения таймера (передачу)
 }
 
-static inline char
-check_crc(const char* data, const uint8_t size)
+static inline char check_crc(const char* data, const uint8_t size)
 {
       uint8_t crc = 0;
       uint8_t i, j;
@@ -59,8 +55,7 @@ check_crc(const char* data, const uint8_t size)
       return crc;
 }
 
-static inline void
-clunet_data_received(const uint8_t src_address, const uint8_t dst_address, const uint8_t command, char* data, const uint8_t size)
+static inline void clunet_data_received(const uint8_t src_address, const uint8_t dst_address, const uint8_t command, char* data, const uint8_t size)
 {
 	if (on_data_received_sniff)
 		(*on_data_received_sniff)(src_address, dst_address, command, data, size);
@@ -74,7 +69,7 @@ clunet_data_received(const uint8_t src_address, const uint8_t dst_address, const
 	if (command == CLUNET_COMMAND_REBOOT)
 	{
 		cli();
-		set_bit(WDTCR, WDE);
+		WDTCR |= (1 << WDE);
 		while(1);
 	}
 
@@ -162,8 +157,7 @@ ISR(CLUNET_TIMER_COMP_VECTOR)
 	}
 }
 
-void
-clunet_send(const uint8_t address, const uint8_t prio, const uint8_t command, const char* data, const uint8_t size)
+void clunet_send(const uint8_t address, const uint8_t prio, const uint8_t command, const char* data, const uint8_t size)
 {
 	/* Если размер данных в пределах буфера передачи (максимально для протокола 250 байт) */
 	if (size < (CLUNET_SEND_BUFFER_SIZE - CLUNET_OFFSET_DATA))
@@ -295,8 +289,7 @@ ISR(CLUNET_INT_VECTOR)
 	}
 }
 
-void
-clunet_init()
+void clunet_init(void)
 {
 	sei();
 	CLUNET_SEND_INIT;
@@ -315,20 +308,17 @@ clunet_init()
 }
 
 /* Возвращает 0, если готов к передаче, иначе приоритет текущей задачи */
-uint8_t
-clunet_ready_to_send()
+uint8_t clunet_ready_to_send(void)
 {
 	return clunetSendingState ? clunetCurrentPrio : 0;
 }
 
-void
-clunet_set_on_data_received(void (*f)(uint8_t src_address, uint8_t dst_address, uint8_t command, char* data, uint8_t size))
+void clunet_set_on_data_received(void (*f)(uint8_t src_address, uint8_t dst_address, uint8_t command, char* data, uint8_t size))
 {
 	on_data_received = f;
 }
 
-void
-clunet_set_on_data_received_sniff(void (*f)(uint8_t src_address, uint8_t dst_address, uint8_t command, char* data, uint8_t size))
+void clunet_set_on_data_received_sniff(void (*f)(uint8_t src_address, uint8_t dst_address, uint8_t command, char* data, uint8_t size))
 {
 	on_data_received_sniff = f;
 }
