@@ -55,9 +55,10 @@ MCU_TARGET     = atmega8
 #MCU_TARGET     = attiny84
 #MCU_TARGET     = attiny85
 #MCU_TARGET     = attiny861
+F_CPU          = 8000000
 OPTIMIZE       = -O2
 
-DEFS           =
+DEFS           = -DF_CPU=$(F_CPU)UL
 LIBS           =
 
 # You should not have to change anything below here.
@@ -80,7 +81,7 @@ $(PRG).elf: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 # dependency:
-clunet_bootloader.o: clunet_bootloader.c defines.h clunet.h ../clunet_config.h ../defines.h bits.h
+clunet_bootloader.o: clunet_bootloader.c defines.h clunet.h ../clunet_config.h
 clean:
 	rm -rf *.o $(PRG).elf *.eps *.png *.pdf *.bak 
 	rm -rf *.lst *.map $(EXTRA_CLEAN_FILES)

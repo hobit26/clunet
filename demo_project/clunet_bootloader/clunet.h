@@ -8,7 +8,6 @@
 #ifndef __clunet_h_included__
 #define __clunet_h_included__
 
-#include "bits.h"
 #include "clunet_config.h"
 
 #define CLUNET_SENDING_STATE_IDLE 0

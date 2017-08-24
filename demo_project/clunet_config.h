@@ -38,7 +38,7 @@
 */
  //#define CLUNET_T 8
 
-#if defined(__AVR_ATmega8__) 
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__)
 
   /* Timer initialization */
   #define CLUNET_TIMER_INIT { TCCR2 = (1 << CS22); }
@@ -46,9 +46,6 @@
   /* Timer registers */
   #define CLUNET_TIMER_REG TCNT2
   #define CLUNET_TIMER_REG_OCR OCR2
-
-  /* MCU Status Register */
-  #define CLUNET_MCU_STATUS_REGISTER MCUCSR
 
   /* How to enable and disable timer interrupts */
   #define CLUNET_ENABLE_TIMER_COMP { TIFR |= (1 << OCF2); TIMSK |= (1 << OCIE2); }
@@ -70,9 +67,6 @@
   #define CLUNET_TIMER_REG TCNT2
   #define CLUNET_TIMER_REG_OCR OCR2A
 
-  /* MCU Status Register */
-  #define CLUNET_MCU_STATUS_REGISTER MCUSR
-
   /* How to enable and disable timer interrupts */
   #define CLUNET_ENABLE_TIMER_COMP { TIFR2 |= (1 << OCF2A); TIMSK2 |= (1 << OCIE2A); }
   #define CLUNET_DISABLE_TIMER_COMP { TIMSK2 &= ~(1 << OCIE2A); }
@@ -87,6 +81,10 @@
 #else
   #error Device type not defined
 
+#endif
+
+#ifndef MCUSR
+  #define MCUSR MCUCSR
 #endif
 
 #endif /* __clunet_config_h_included__ */

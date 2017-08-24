@@ -292,7 +292,7 @@ void clunet_init(void)
   CLUNET_READ_INIT;
   CLUNET_TIMER_INIT;
   CLUNET_INIT_INT;
-  char reset_source = CLUNET_MCU_STATUS_REGISTER;
+  char reset_source = MCUSR;
   clunet_send (
     CLUNET_BROADCAST_ADDRESS,
     CLUNET_PRIORITY_MESSAGE,
@@ -300,7 +300,7 @@ void clunet_init(void)
     &reset_source,
     sizeof(reset_source)
   );
-  CLUNET_MCU_STATUS_REGISTER = 0;
+  MCUSR = 0;
 }
 
 /* Возвращает 0, если готов к передаче, иначе приоритет текущей задачи */
